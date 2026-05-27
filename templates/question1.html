@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Election Results Portal :: Delta State 2011</title>
+    <title>Polling Unit Results : Question 1</title>
     <!-- css Link-->
     <link href="./css/output.css" rel="stylesheet"/>
 
@@ -12,7 +12,8 @@
       rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" 
     />
 </head>
-<body class="min-h-screen">
+
+<body class="bg-linear-to-br from-green-400 to-green-600 min-h-screen">
     <nav class="sticky w-full top-0 z-100 p-4 bg-green-800 border-b-2">
         <div class="container mx-auto flex items-center justify-between align-middle max-w-[85%]">
             <div>
@@ -42,46 +43,28 @@
             </div>
         </div>
     </nav>
-
-    
-    <!-- main section wrapper -->
     <main>
         <section id="" class="bg-green-700 lg:h-screen w-full">
             <div class="container px-4 py-25 mx-auto max-w-[85%] lg:px-0">
+            <a href="/templates/index.html" class="text-white hover:text-purple-200 transition mb-4 inline-block">← Back to Home</a>
                 <div class="flex flex-col items-center">
-                    <h2 class="text-4xl text-center font-bold lg:text-5xl text-white">Election Results System</h2>
-                    <p class="pt-4 text-xl font-medium lg:text-[1.7rem] text-gray-200 lg:max-w-210 lg:pt-9 text-center">Delta State - 2011 Election Results Viewer</p>
+                    <h2 class="text-4xl text-center font-bold lg:text-5xl text-white">Polling Unit Results</h2>
+                    <p class="pt-4 text-xl font-medium lg:text-[1.7rem] text-gray-200 lg:max-w-210 lg:pt-9 text-center">elect a polling unit to view its detailed election results</p>
                 </div>
 
-                <!-- Navigation Cards -->
-                <div class="grid grid-cols-1 gap-10 pt-21 sm:grid-cols-3 lg:grid-cols-3 place-content-center">
-
-                    <!-- Question 1 Card -->
-                    <div class="bg-white p-4 flex flex-col items-center lg:p-10 lg:pt-11 border border-gray-700 rounded-2xl shadow shadow-orange-400">
-                        <div class="bg-lightblue text-orange-600 text-2xl rounded-xl text-center content-center size-16"><i class="fas fa-map"></i></div>
-                        <h2 class="text-orange-600 text-2xl text-center font-bold pt-8 pb-4">Question 1</h2>
-                        <h3 class="text-gray-600 text-2xl text-center font-semibold pb-5">Polling Unit Results</h3>
-                        <p class="font-normal text-gray-800 text-xl text-center pb-6 lg:text-2xl md:text-left">View detailed election results for any individual polling unit in Delta State.</p>
-                        <a href="./question1.html" class="inline-block bg-orange-600 text-white px-6 font-bold py-2 rounded-lg hover:bg-orange-700 transition">View Results</a>
-                    </div>
-                    
-                    <!-- Question 2 Card -->
-                    <div class="bg-white p-4 flex flex-col items-center lg:p-10 lg:pt-11 border border-gray-700 rounded-2xl shadow shadow-orange-400">
-                        <div class="bg-lightblue text-orange-600 text-2xl rounded-xl text-center content-center size-16"><i class="fas fa-map"></i></div>
-                        <h2 class="text-orange-600 text-2xl text-center font-bold pt-8 pb-4">Question 2</h2>
-                        <h3 class="text-gray-600 text-2xl text-center font-semibold pb-5">LGA Summary</h3>
-                        <p class="font-normal text-gray-800 text-xl text-center pb-6 lg:text-2xl md:text-left">Summed total results from all polling units in a Local Government Area.</p>
-                        <a href="/question2" class="inline-block bg-orange-600 text-white px-6 font-bold py-2 rounded-lg hover:bg-orange-700 transition">View Summary</a>
+                <!-- search and results disply area -->
+                <div class="w-[85%] pt-21 mx-auto text-center">
+                     
+                    <!-- Dropdown -->
+                    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                        <label class="block text-gray-700 font-bold mb-3">Select Polling Unit:</label>
+                        <select id="pollingUnitSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <option value=""> Loading polling units... </option>
+                        </select>
                     </div>
 
-                    <!-- Question 3 Card -->
-                    <div class="bg-white p-4 flex flex-col items-center lg:p-10 lg:pt-11 border border-gray-700 rounded-2xl shadow shadow-orange-400">
-                        <div class="bg-lightblue text-orange-600 text-2xl rounded-xl text-center content-center size-16"><i class="fas fa-map"></i></div>
-                        <h2 class="text-orange-600 text-2xl text-center font-bold pt-8 pb-4">Question 3</h2>
-                        <h3 class="text-gray-600 text-2xl text-center font-semibold pb-5">Add New Result</h3>
-                        <p class="font-normal text-gray-800 text-xl text-center pb-6 lg:text-2xl md:text-left">Store new election results for a polling unit.</p>
-                        <a href="/question2" class="inline-block bg-orange-600 text-white px-6 font-bold py-2 rounded-lg hover:bg-orange-700 transition">Add Results</a>
-                    </div>
+                    <div id="resultsArea"></div>
+                  
 
                 </div>
             </div>
