@@ -44,7 +44,7 @@
         </div>
     </nav>
     <main>
-        <section id="" class="bg-green-700 lg:h-screen w-full">
+        <section id="" class="bg-green-700 w-full">
             <div class="container px-4 py-25 mx-auto max-w-[85%] lg:px-0">
                 <a href="/" class="text-white hover:text-orange-400 transition mb-4 inline-block">←
                     Back to Home</a>
@@ -134,7 +134,7 @@
 
         async function loadResults(pollingUnitId) {
             const resultsArea = document.getElementById('resultsArea');
-            resultsArea.innerHTML = `<div class="bg-white rounded-lg shadow-lg p-8 text-center"><div class="text-green-600 text-xl">📊 Loading results...</div></div>`;
+            resultsArea.innerHTML = `<div class="bg-white rounded-lg shadow-lg p-8 text-center"><div class="text-green-600 text-xl">Loading results...</div></div>`;
 
             try {
                 const response = await fetch(`/api/polling-unit-results/${pollingUnitId}`);

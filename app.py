@@ -187,6 +187,8 @@ def get_parties():
 def save_results():
     try:
         data = request.json
+        print("Received data:", data)  # Debug log
+        
         polling_unit_id = data.get('polling_unit_id')
         entered_by = data.get('entered_by')
         party_scores = data.get('party_scores', {})
@@ -204,7 +206,16 @@ def save_results():
         
         cursor = connection.cursor(dictionary=True)
         
-        # Check if results already exist
+        # Verify polling unit exists
+        cursor.execute("SELECT uniqueid FROM polling_unit WHERE uniqueid = %s", (polling_unit_id,))
+        pu_check = cursor.fetchone()
+        
+        if not pu_check:
+            cursor.close()
+            connection.close()
+            return jsonify({'success': False, 'message': f'Polling unit {polling_unit_id} does not exist'}), 400
+        
+        # Check if results already exist (polling_unit_uniqueid is VARCHAR in database)
         cursor.execute("SELECT COUNT(*) as count FROM announced_pu_results WHERE polling_unit_uniqueid = %s", (str(polling_unit_id),))
         check = cursor.fetchone()
         
@@ -213,33 +224,40 @@ def save_results():
             connection.close()
             return jsonify({'success': False, 'message': 'Results already exist for this polling unit'}), 400
         
-        # Insert each party's score
         from datetime import datetime
         date_entered = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         success_count = 0
+        inserted_parties = []
+        
         for party, score in party_scores.items():
             score = int(score)
             if score > 0:
-                cursor.execute("""
-                    INSERT INTO announced_pu_results 
-                    (polling_unit_uniqueid, party_abbreviation, party_score, 
-                     entered_by_user, date_entered, user_ip_address)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, (str(polling_unit_id), party, score, entered_by, date_entered, '127.0.0.1'))
-                success_count += 1
+                try:
+                    cursor.execute("""
+                        INSERT INTO announced_pu_results 
+                        (polling_unit_uniqueid, party_abbreviation, party_score, 
+                         entered_by_user, date_entered, user_ip_address)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                    """, (str(polling_unit_id), party, score, entered_by, date_entered, '127.0.0.1'))
+                    success_count += 1
+                    inserted_parties.append(party)
+                    print(f"Inserted {party}: {score}")  # Debug log
+                except Exception as e:
+                    print(f"Error inserting {party}: {e}")  # Debug log
         
         connection.commit()
         cursor.close()
         connection.close()
         
         if success_count > 0:
-            return jsonify({'success': True, 'message': f'Successfully saved results for {success_count} parties!'})
+            return jsonify({'success': True, 'message': f'✅ Successfully saved results for {success_count} parties: {", ".join(inserted_parties)}'})
         else:
-            return jsonify({'success': False, 'message': 'No valid scores to save'}), 400
+            return jsonify({'success': False, 'message': 'No valid scores to save. Please enter at least one score greater than 0.'}), 400
             
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        print(f"Exception in save_results: {e}")  # Debug log
+        return jsonify({'success': False, 'message': f'Server error: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

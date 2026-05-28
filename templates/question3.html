@@ -62,6 +62,7 @@
                     <div id="errorMessage"
                         class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded-lg"></div>
 
+
                     <form id="resultsForm" class="p-6 mx-auto max-w-[80%] md:max-w-[50%]">
 
                         <div class="mb-8">
@@ -78,8 +79,6 @@
                                     results for.</p>
                             </div>
                         </div>
-
-
                         <div class="my-12 ">
                             <h3 class="text-xl font-bold text-gray-800 mb-4">Input Results for All Parties</h3>
                             <div id="partyInputs" class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -146,6 +145,132 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        async function loadPollingUnits() {
+            const select = document.getElementById('pollingUnit');
+
+            try {
+                const response = await fetch('/api/polling-units');
+                const units = await response.json();
+
+                select.innerHTML = '<option value=""> Select a polling unit </option>';
+
+                units.forEach(unit => {
+                    const option = document.createElement('option');
+                    option.value = unit.uniqueid;
+                    option.textContent = unit.polling_unit_name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                select.innerHTML = '<option value="">Error loading polling units</option>';
+            }
+        }
+
+        async function loadParties() {
+            try {
+                const response = await fetch('/api/parties');
+                const parties = await response.json();
+
+                const partyInputs = document.getElementById('partyInputs');
+                partyInputs.innerHTML = '';
+
+                parties.forEach(party => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg';
+                    div.innerHTML = `
+                        <label class="font-bold text-green-600 w-16">${party.partyid}:</label>
+                        <input type="number" 
+                               name="party_scores[${party.partyid}]" 
+                               value="0" 
+                               min="0" 
+                               max="999999" 
+                               step="1"
+                               class="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                               required>
+                        <span class="text-sm text-gray-500">${party.partyname}</span>
+                    `;
+                    partyInputs.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('partyInputs').innerHTML = '<div class="text-red-500">Error loading parties</div>';
+            }
+        }
+
+        document.getElementById('resultsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            const submitBtn = document.querySelector('button[type="submit"]');
+
+            successDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            const pollingUnitId = document.getElementById('pollingUnit').value;
+            const enteredBy = document.getElementById('enteredBy').value;
+
+            const partyScores = {};
+            const partyInputs = document.querySelectorAll('input[name^="party_scores"]');
+            partyInputs.forEach(input => {
+                const match = input.name.match(/party_scores\[(.*?)\]/);
+                if (match) {
+                    partyScores[match[1]] = parseInt(input.value) || 0;
+                }
+            });
+
+            const formData = {
+                polling_unit_id: parseInt(pollingUnitId),
+                entered_by: enteredBy,
+                party_scores: partyScores
+            };
+
+            try {
+                const response = await fetch('/api/save-results', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    successDiv.innerHTML = `${result.message}`;
+                    successDiv.classList.remove('hidden');
+                    document.getElementById('resultsForm').reset();
+                    loadPollingUnits();
+
+                    document.querySelectorAll('input[type="number"]').forEach(input => {
+                        if (input.name.includes('party_scores')) {
+                            input.value = '0';
+                        }
+                    });
+
+                    successDiv.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    errorDiv.innerHTML = `${result.message}`;
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.innerHTML = 'Error saving results. Please check your connection and try again.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload Results';
+            }
+        });
+
+        loadPollingUnits();
+        loadParties();
+    </script>
 </body>
 
 </html>

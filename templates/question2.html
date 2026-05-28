@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body class="min-h-screen">
@@ -44,7 +45,7 @@
         </div>
     </nav>
     <main>
-        <section id="" class="bg-green-700 lg:h-screen w-full">
+        <section id="" class="bg-green-700 w-full">
             <div class="container px-4 py-25 mx-auto max-w-[85%] lg:px-0">
                 <a href="/" class="text-white hover:text-orange-400 transition mb-4 inline-block">← Back to Home</a>
                 <div class="flex flex-col items-center">
@@ -59,7 +60,7 @@
                     <!-- Dropdown -->
                     <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
                         <label class="block text-gray-700 font-bold mb-3">Select Local Government Area:</label>
-                        <select id="pollingUnitSelect"
+                        <select id="lgaSelect"
                             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <option value=""> Loading LGAs... </option>
                         </select>
@@ -109,6 +110,158 @@
         </div>
     </footer>
 
+
+    <script>
+        async function loadLGAs() {
+            const select = document.getElementById('lgaSelect');
+
+            try {
+                const response = await fetch('/api/lgas');
+                const lgas = await response.json();
+
+                select.innerHTML = '<option value=""> Select an LGA </option>';
+
+                lgas.forEach(lga => {
+                    const option = document.createElement('option');
+                    option.value = lga.lga_id;
+                    option.textContent = lga.lga_name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                select.innerHTML = '<option value="">Error loading LGAs</option>';
+            }
+        }
+
+        async function loadLGASummary(lgaId) {
+            const resultsArea = document.getElementById('resultsArea');
+            resultsArea.innerHTML = `<div class="bg-white rounded-lg shadow-lg p-8 text-center"><div class="text-green-600 text-xl">Calculating summed results...</div></div>`;
+
+            try {
+                const response = await fetch(`/api/lga-summary/${lgaId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    resultsArea.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">${data.error}</div>`;
+                    return;
+                }
+
+                let maxSummed = 0, winnerSummed = '';
+                data.summed_results.forEach(r => {
+                    if (parseInt(r.total) > maxSummed) {
+                        maxSummed = parseInt(r.total);
+                        winnerSummed = r.party_abbreviation;
+                    }
+                });
+
+                let maxOfficial = 0, winnerOfficial = '';
+                data.official_results.forEach(r => {
+                    if (parseInt(r.party_score) > maxOfficial) {
+                        maxOfficial = parseInt(r.party_score);
+                        winnerOfficial = r.party_abbreviation;
+                    }
+                });
+
+                let html = `<div class="grid md:grid-cols-2 gap-8">`;
+
+                // Summed Results Column
+                html += `
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4">
+                            <h2 class="text-xl font-bold">SUMMED POLLING UNIT RESULTS</h2>
+                            <p class="text-sm opacity-90">Calculated from ${data.polling_units_count} polling units</p>
+                        </div>
+                        <div class="p-4">
+                `;
+
+                data.summed_results.forEach(result => {
+                    const isWinner = result.party_abbreviation === winnerSummed;
+                    html += `
+                        <div class="flex justify-between items-center p-3 ${isWinner ? 'bg-green-50 border-l-4 border-green-500' : 'border-b border-gray-200'}">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-gray-800">${result.party_abbreviation}</span>
+                                ${isWinner ? '<span class="text-yellow-500">Winner</span>' : ''}
+                            </div>
+                            <span class="font-semibold text-gray-800">${parseInt(result.total).toLocaleString()} votes</span>
+                        </div>
+                    `;
+                });
+
+                html += `
+                            <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+                                <div class="flex justify-between items-center font-bold">
+                                    <span> TOTAL VOTES</span>
+                                    <span class="text-lg">${data.summed_total.toLocaleString()} votes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Official Results Column
+                html += `
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4">
+                            <h2 class="text-xl font-bold">OFFICIAL LGA RESULTS</h2>
+                            <p class="text-sm opacity-90">As announced at Local Government level</p>
+                        </div>
+                        <div class="p-4">
+                `;
+
+                data.official_results.forEach(result => {
+                    const isWinner = result.party_abbreviation === winnerOfficial;
+                    html += `
+                        <div class="flex justify-between items-center p-3 ${isWinner ? 'bg-blue-50 border-l-4 border-blue-500' : 'border-b border-gray-200'}">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-gray-800">${result.party_abbreviation}</span>
+                                ${isWinner ? '<span class="text-yellow-500">Winner</span>' : ''}
+                            </div>
+                            <span class="font-semibold text-gray-800">${parseInt(result.party_score).toLocaleString()} votes</span>
+                        </div>
+                    `;
+                });
+
+                html += `
+                            <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+                                <div class="flex justify-between items-center font-bold">
+                                    <span> TOTAL VOTES</span>
+                                    <span class="text-lg">${data.official_total.toLocaleString()} votes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+
+                const diff = Math.abs(data.summed_total - data.official_total);
+                const percentageDiff = ((diff / Math.max(data.summed_total, data.official_total)) * 100).toFixed(2);
+
+                html += `
+                    <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-6">
+                        <h3 class="text-lg font-bold text-yellow-800 mb-3">Comparison Analysis</h3>
+                        <p class="text-yellow-700 mb-2"><strong>Difference:</strong> ${diff.toLocaleString()} votes (${percentageDiff}% difference)</p>
+                        <p class="text-yellow-700"><strong>Note:</strong> The summed results from polling units ${data.summed_total > data.official_total ? 'exceed' : 'are less than'} the official LGA results by ${diff.toLocaleString()} votes.</p>
+                    </div>
+                `;
+
+                resultsArea.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                resultsArea.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">Error loading summary. Please try again.</div>`;
+            }
+        }
+
+        document.getElementById('lgaSelect').addEventListener('change', (e) => {
+            const selectedId = e.target.value;
+            if (selectedId) {
+                loadLGASummary(selectedId);
+            } else {
+                document.getElementById('resultsArea').innerHTML = '';
+            }
+        });
+
+        loadLGAs();
+    </script>
 </body>
 
 </html>
