@@ -1,0 +1,138 @@
+# Update your system
+sudo apt update && sudo apt upgrade -y
+
+# Install Apache, MySQL, and PHP
+sudo apt install apache2 mysql-server php php-mysql php-curl php-json php-mbstring php-xml libapache2-mod-php -y
+
+# Install additional PHP extensions
+sudo apt install php7.4-mysql php7.4-curl php7.4-json php7.4-mbstring -y
+
+# Install MySQL client
+sudo apt install mysql-client -y
+
+# Start Apache
+sudo service apache2 start
+
+# Start MySQL
+sudo service mysql start
+
+# Enable services to start automatically (optional)
+sudo systemctl enable apache2
+sudo systemctl enable mysql
+
+# secure mysql OPTIONAL
+sudo mysql_secure_installation
+
+# Connect to MySQL
+sudo mysql -u root -p
+
+# If you haven't set a password, just press Enter
+
+-- Create database
+CREATE DATABASE IF NOT EXISTS bincom_test;
+USE bincom_test;
+
+-- Import your SQL file
+SOURCE /path/to/your/bincom_test.sql;
+
+-- Or if the file is in your current directory:
+SOURCE bincom_test.sql;
+
+-- Verify it worked
+SHOW TABLES;
+
+-- Exit MySQL
+EXIT;
+
+
+election_results/
+├── app.py
+├── config.py
+├── requirements.txt
+├── templates/
+│   ├── index.html
+│   ├── question1.html
+│   ├── question2.html
+│   └── question3.html
+├── static/
+│   └── css/
+│       └── custom.css
+└── api/
+    ├── __init__.py
+    └── routes/
+        ├── __init__.py
+        ├── polling_units.py
+        ├── lga_results.py
+        └── save_results.py
+
+# MYSQL SETUP
+# Connect to MySQL
+sudo mysql -u root -p
+
+# Create database
+CREATE DATABASE IF NOT EXISTS bincom_test;
+USE bincom_test;
+
+# import tables
+SOURCE ./bincom_test.sql;
+
+# Verify tables
+SHOW TABLES;
+
+# Exit MySQL
+EXIT;
+
+# verify MySQL
+mysql -u root -p -e "SHOW DATABASES;"
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+
+# Install required packages
+pip install flask flask-mysql-connector mysql-connector-python
+
+# Create requirements file
+cat > requirements.txt << EOF
+Flask==2.3.3
+mysql-connector-python==8.1.0
+EOF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

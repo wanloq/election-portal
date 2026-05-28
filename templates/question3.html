@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Results - Question 3</title>
+    <!-- css Link-->
+    <link href="../static/css/output.css" rel="stylesheet" />
+
+    <!-- Font Awesome Link-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="min-h-screen">
+    <nav class="sticky w-full top-0 z-100 p-4 bg-green-800 border-b-2">
+        <div class="container mx-auto flex items-center justify-between align-middle max-w-[85%]">
+            <div>
+                <a class="flex items-center gap-1 lg:gap-4" href="#"><img
+                        class="size-8 rounded-xl shrink lg:size-10 lg:rounded-2xl" src="../static/assets/logo.png"
+                        alt="Bincom Logo">
+                    <h1 class="font-bold text-xl lg:text-2xl text-white">BINCOM DEV CENTER </h1>
+                </a>
+            </div>
+
+            <!-- Desktop nav -->
+            <div id="menu" class="text-gray-300 text-xl font-semibold ">
+                <ul class="hidden justify-center md:space-x-5 lg:space-x-12 md:flex  lg:flex">
+                    <li><a class="hover:border-b-4 hover:text-orange-400 " href="/">Home</a></li>
+                    <li><a class="hover:border-b-4 hover:text-orange-400 " href="/question1">Question 1</a></li>
+                    <li><a class="hover:border-b-4 hover:text-orange-400" href="/question2">Question 2</a></li>
+                    <li><a class="hover:border-b-4 hover:text-orange-400" href="/question3">Question 3</a></li>
+                </ul>
+            </div>
+            <div class="items-center">
+                <!-- Hamburger menu shown only on mobile  -->
+                <div class="md:hidden">
+                    <i class="fas fa-bars text-white text-2xl"></i>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    <main>
+        <section id="" class="bg-green-700 w-full">
+            <div class="container px-4 py-25 mx-auto max-w-[85%] lg:px-0">
+                <a href="/" class="text-white hover:text-orange-400 transition mb-4 inline-block">←
+                    Back to Home</a>
+                <div class="flex flex-col items-center">
+                    <h2 class="text-4xl text-center font-bold lg:text-5xl text-white">Add New Election Results</h2>
+                    <p class="py-4 text-xl font-medium lg:text-[1.7rem] text-gray-200 lg:max-w-210 lg:pt-9 text-center">
+                        Upload results for a polling unit </p>
+                </div>
+
+                <!-- form disply area -->
+                <div class="w-[80%] bg-white pt-21 mx-auto text-center rounded-lg shadow-xl overflow-hidden">
+                    <div id="successMessage"
+                        class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 m-4 rounded-lg">
+                    </div>
+                    <div id="errorMessage"
+                        class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded-lg"></div>
+
+                    <form id="resultsForm" class="p-6 mx-auto max-w-[80%] md:max-w-[50%]">
+
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Select Polling Unit</h3>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-bold mb-2">Polling Unit <span
+                                        class="text-red-500">*</span></label>
+                                <select id="pollingUnit" name="polling_unit_id"
+                                    class="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    required>
+                                    <option value=""> Select a polling unit </option>
+                                </select>
+                                <p class="text-sm text-gray-500 mt-1">Select an existing polling unit you want to add
+                                    results for.</p>
+                            </div>
+                        </div>
+
+
+                        <div class="my-12 ">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Input Results for All Parties</h3>
+                            <div id="partyInputs" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div class="text-gray-500">Loading parties...</div>
+                            </div>
+                        </div>
+
+
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Your Information</h3>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-bold mb-2">Your Full Name <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" id="enteredBy" name="entered_by"
+                                    class="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    required placeholder="Please enter your full name">
+                                <p class="text-sm text-gray-500 mt-1">Your information will be recorded as the person
+                                    who entered these results</p>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="w-[60%] bg-orange-600 text-white py-3 rounded-lg font-bold hover:bg-orange-700 transition transform hover:scale-110">
+                            Upload Results
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- extra information -->
+        <section id="" class="bg-green-700 w-full">
+            <div class="mx-auto p-15 bg-green-800 text-white text-center">
+                <h3 class="text-2xl font-bold mb-3 text-center">About This Portal</h3>
+                <p class="mb-4">This system displays real election results from Delta State (State ID: 25).</p>
+                <p class="mb-4">Data is sourced from individual polling units across all 25 Local Government Areas.</p>
+                <p class=" opacity-80">Results are calculated directly from polling unit data, not from pre-aggregated
+                    tables.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- footer -->
+    <footer class="bg-green-900 py-6 flex items-center w-full">
+        <div class="container max-w-360 mx-auto flex justify-between items-center">
+
+            <!-- logo -->
+            <div class="flex gap-1 lg:gap-4 items-center">
+                <img class="size-8 lg:size-10 rounded-2xl shrink" src="../static/assets/logo.png" alt="Bincom Logo">
+                <h1 class="text-white lg:text-3xl font-bold ">Bincom</h1>
+            </div>
+
+            <!-- copyright info -->
+            <div>
+                <p class="text-gray-400 lg:text-3xl flex text-center"><small>&copy; 2026 Bincom Dev Center. All rights
+                        reserved</small></p>
+            </div>
+
+            <!-- social icons -->
+            <div class="flex items-center gap-1 text-gray-300 lg:text-3xl lg:gap-4">
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-linkedin"></i>
+                <i class="fab fa-github"></i>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
